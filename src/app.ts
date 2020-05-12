@@ -15,10 +15,10 @@ app.use((req, res, next) => {
     next();
 });
 
-app.get('/*', (req, res) => {
+app.get('/:url', (req, res) => {
 
     // use url from route param
-    const url = req.url.substr(1);
+    const url = req.params.url;
 
     // get data from request url
     request({
