@@ -2,7 +2,7 @@ const express = require('express');
 const request = require('request');
 
 const hostname = '127.0.0.1';
-const port = 3000;
+const port = process.env.PORT || 5000;
 const app = express();
 const server = require("http").Server(app);
 
@@ -15,10 +15,10 @@ app.use((req, res, next) => {
     next();
 });
 
-app.get('/:url', (req, res) => {
+app.get('*', (req, res) => {
 
     // use url from route param
-    const url = req.params.url;
+    const url = req.url.substring(1);
 
     // get data from request url
     request({
