@@ -16,39 +16,44 @@ app.use((req, res, next) => {
 });
 
 app.get('*', (req, res) => {
+    try {
+        // use url from route param
+        const url = req.url.substring(1);
 
-    // use url from route param
-    const url = req.url.substring(1);
+        // get data from request url
+        request({
+            url: url,
+            method: 'GET',
+            encoding: null
+        }, (error, response, body) => {
 
-    // get data from request url
-    request({
-        url: url,
-        method: 'GET',
-        encoding: null
-    }, (error, response, body) => {
+            if (!error) {
 
-        if (!error) {
+                // copy headers
+                Object.keys(response.headers).forEach(key => {
+                    res.setHeader(key, response.headers[key]);
+                });
 
-            // copy headers
-            Object.keys(response.headers).forEach(key => {
-                res.setHeader(key, response.headers[key]);
-            });
+                // forward http response
+                res.status(200);
+                res.send(body);
 
-            // forward http response
-            res.status(200);
-            res.send(body);
+            } else {
 
-        } else {
-
-            // handle error
-            res.status(400);
-            res.json({error: error.message});
-        }
-    });
+                // handle error
+                res.status(400);
+                res.json({error: error.message});
+            }
+        });
+    } catch (e) {
+        console.trace(e);
+        // handle error
+        res.status(500);
+        res.json({error: e.message});
+    }
 
 });
-
-// listen for request on port 3000, and as a callback function have the port listened on logged
+// start app
 server.listen(port, hostname, () => {
     console.log(`Server running at http://${hostname}:${port}/`);
 });
